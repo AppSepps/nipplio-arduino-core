@@ -51,18 +51,27 @@ void loginWithCustomToken()
 }
 
 void unpairDevice() {
-	String idToken = server.arg("idToken");
+	/*String idToken = server.arg("idToken");
 	String userId = getUserIdForIdToken(idToken);
 	if(idToken != NULL && userId == uid) {
+		*/
 		server.sendHeader("Access-Control-Allow-Origin", "*");
 		server.send(200, "application/text", "");
 		deleteConfigFile();
-		wifiManager.resetSettings();
 		ESP.restart();
-	} else {
+	/*} else {
 		server.sendHeader("Access-Control-Allow-Origin", "*");
 		server.send(401, "application/text", "Not authorized to unpair");	
-	}
+	}*/
+}
+
+void resetDeviceToFactory() {
+	unpairDevice();
+	wifiManager.resetSettings();
+}
+
+void setSlotMappingToFirebase() {
+	updateBoardInformation();
 }
 
 void getConfigRoute()
@@ -149,15 +158,17 @@ void Nipplio::setup()
 	server.on("/loginWithCustomToken", loginWithCustomToken);
 	server.on("/getConfig", getConfigRoute);
 	server.on("/unpairDevice", unpairDevice);
+	server.on("/resetDeviceToFactory", resetDeviceToFactory);
+	server.on("/setSlotMappingToFirebase", setSlotMappingToFirebase);
 	server.begin();
 	String recivedData;
 	recivedData = read_String(10);
 	//Serial.println("read_String: " + recivedData);
 }
 
-void Nipplio::setSlotNames(String slotNamesArray[])
+void Nipplio::setSlotNames(String slotNamesArray[], int sizeOfArray)
 {
-	for (int i = 0; i < sizeof(slotNamesArray); i++)
+	for (int i = 0; i < sizeOfArray; i++)
 	{
 		slotNames[i] = slotNamesArray[i];
 	}

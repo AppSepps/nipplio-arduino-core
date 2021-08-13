@@ -15,7 +15,7 @@ void setup()
   nipplio.setup();
   String slotNames[] = {"Button name top", "Button name left", "Button name right", "Button name bottom"};
   // set the slotnames for each button. These button names will be shown in the nipplio web ui for the board config.
-  nipplio.setSlotNames(slotNames);
+  nipplio.setSlotNames(slotNames, 4);
 }
 
 void loop()
