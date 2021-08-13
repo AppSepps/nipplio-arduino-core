@@ -26,6 +26,7 @@
 #else
 	WebServer server(80);
 #endif
+WiFiManager wifiManager;
 
 Nipplio::Nipplio()
 {
@@ -47,6 +48,21 @@ void loginWithCustomToken()
 	updateBoardInformation();
 	server.sendHeader("Access-Control-Allow-Origin", "*");
 	server.send(200, "application/json", "\"idToken\":\"" + idToken + "\",\"refreshToken\":\"" + refreshToken + "\"");
+}
+
+void unpairDevice() {
+	String idToken = server.arg("idToken");
+	String userId = getUserIdForIdToken(idToken);
+	if(idToken != NULL && userId == uid) {
+		server.sendHeader("Access-Control-Allow-Origin", "*");
+		server.send(200, "application/text", "");
+		deleteConfigFile();
+		wifiManager.resetSettings();
+		ESP.restart();
+	} else {
+		server.sendHeader("Access-Control-Allow-Origin", "*");
+		server.send(401, "application/text", "Not authorized to unpair");	
+	}
 }
 
 void getConfigRoute()
@@ -108,8 +124,10 @@ void Nipplio::setup()
 	//Serial.print("efuse ID: ");
 	storageSetup();
 	readValuesFromSpiffs();
-	WiFiManager wifiManager;
-	wifiManager.autoConnect();
+	wifiManager.setHostname(String(chipId).c_str());
+	String ssid = "Nipplio-" + String(chipId);
+	wifiManager.autoConnect(ssid.c_str(), NULL);
+	//wifiManager.autoConnect();
 	//Serial.println(WiFi.localIP());
 	String str = String(chipId);
 	// Length (with one extra character for the null terminator)
@@ -130,6 +148,7 @@ void Nipplio::setup()
 	server.on("/", handleRoot);
 	server.on("/loginWithCustomToken", loginWithCustomToken);
 	server.on("/getConfig", getConfigRoute);
+	server.on("/unpairDevice", unpairDevice);
 	server.begin();
 	String recivedData;
 	recivedData = read_String(10);

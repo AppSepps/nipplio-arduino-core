@@ -13,6 +13,10 @@ String idToken;
 String refreshToken;
 String slotNames[255];
 
+void deleteConfigFile() {
+	SPIFFS.remove("/config.json");
+}
+
 void storageSetup()
 {
 	#if defined(ESP8266)

@@ -127,6 +127,23 @@ void getUserData()
 
 	saveValuesToSpiffs();
 }
+
+String getUserIdForIdToken(String idToken) {
+	
+	String host = "https://us-central1-nipplio.cloudfunctions.net/getUserIdForIdToken";
+	HTTPClient http; //Declare object of class HTTPClient
+	WiFiClientSecure client;
+	client.setInsecure();
+
+	http.begin(client, host); //Specify request destination
+	http.addHeader("Content-Type", "application/json");
+	http.addHeader("Referer", "https://nipplio.web.app");
+	const int httpCode = http.POST("{\"idToken\":\"" + idToken + "\"}");
+	String payload = http.getString();
+	http.end(); //Close connection
+	return payload;
+}
+
 void getAuthTokensFromCustomToken(String customToken)
 {
 	String host = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=AIzaSyArf5iDUeHvR4CzyNuO-73nESEsXuUQAFM";
