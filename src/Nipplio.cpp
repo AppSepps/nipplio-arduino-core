@@ -2,15 +2,15 @@
 #include "Nipplio.h"
 
 #if defined(ESP8266)
-	#include <ESP8266HTTPClient.h>
-	#include <ESP8266WiFi.h>
-	#include <ESP8266WebServer.h>
-	#include <ESP8266mDNS.h>
+#include <ESP8266HTTPClient.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
 #else
-	#include <HTTPClient.h>
-	#include <WiFi.h>
-	#include <WebServer.h>
-	#include <ESPmDNS.h>
+#include <HTTPClient.h>
+#include <WiFi.h>
+#include <WebServer.h>
+#include <ESPmDNS.h>
 #endif
 #include <DNSServer.h>
 #include <ArduinoJson.h>
@@ -22,9 +22,9 @@
 // Set these to run example.
 #define FIREBASE_HOST "https://nipplio-default-rtdb.europe-west1.firebasedatabase.app/"
 #if defined(ESP8266)
-	ESP8266WebServer server(80);
+ESP8266WebServer server(80);
 #else
-	WebServer server(80);
+WebServer server(80);
 #endif
 WiFiManager wifiManager;
 
@@ -50,28 +50,26 @@ void loginWithCustomToken()
 	server.send(200, "application/json", "\"idToken\":\"" + idToken + "\",\"refreshToken\":\"" + refreshToken + "\"");
 }
 
-void unpairDevice() {
+void unpairDevice()
+{
 	/*String idToken = server.arg("idToken");
 	String userId = getUserIdForIdToken(idToken);
 	if(idToken != NULL && userId == uid) {
 		*/
-		server.sendHeader("Access-Control-Allow-Origin", "*");
-		server.send(200, "application/text", "");
-		deleteConfigFile();
-		ESP.restart();
+	server.sendHeader("Access-Control-Allow-Origin", "*");
+	server.send(200, "application/text", "");
+	deleteConfigFile();
+	ESP.restart();
 	/*} else {
 		server.sendHeader("Access-Control-Allow-Origin", "*");
 		server.send(401, "application/text", "Not authorized to unpair");	
 	}*/
 }
 
-void resetDeviceToFactory() {
+void resetDeviceToFactory()
+{
 	unpairDevice();
 	wifiManager.resetSettings();
-}
-
-void setSlotMappingToFirebase() {
-	updateBoardInformation();
 }
 
 void getConfigRoute()
@@ -94,6 +92,12 @@ void getConfigRoute()
 
 	server.sendHeader("Access-Control-Allow-Origin", "*");
 	server.send(200, "application/json", output);
+}
+
+void setSlotMappingToFirebase()
+{
+	updateBoardInformation();
+	getConfigRoute();
 }
 
 void writeString(char add, String data)
@@ -148,7 +152,7 @@ void Nipplio::setup()
 	// Copy it over
 	str.toCharArray(char_array, str_len);
 	if (!MDNS.begin(char_array))
-	{ // Start the mDNS responder for esp8266.local
+	{	// Start the mDNS responder for esp8266.local
 		//Serial.println("Error setting up MDNS responder!");
 	}
 	MDNS.addService("nipplio", "tcp", 80);
@@ -183,7 +187,7 @@ void Nipplio::loop()
 {
 	server.handleClient();
 	checkIfRefreshTokenStillValidAndIfNotRefreshTheToken();
-	#if defined(ESP8266)
+#if defined(ESP8266)
 	MDNS.update();
-	#endif
+#endif
 }
