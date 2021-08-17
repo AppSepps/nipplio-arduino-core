@@ -11,6 +11,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
+#include "BLEHelper.h"
 #endif
 #include <DNSServer.h>
 #include <ArduinoJson.h>
@@ -132,6 +133,7 @@ String read_String(char add)
 void Nipplio::setup()
 {
 	setupFirebaseNetwork();
+	//BLESetup();
 	//Serial.print("Chip ID: ");
 	//Serial.println(chipId);
 	//Serial.print("efuse ID: ");
@@ -181,12 +183,16 @@ void Nipplio::setSlotNames(String slotNamesArray[], int sizeOfArray)
 void Nipplio::triggerSlotWithNumber(int slot)
 {
 	updatePlaySound(slot);
+#if defined(ESP32)
+	BLENotifyButtonPressed(slot);
+#endif
 }
 
 void Nipplio::loop()
 {
 	server.handleClient();
 	checkIfRefreshTokenStillValidAndIfNotRefreshTheToken();
+	BLEloop();
 #if defined(ESP8266)
 	MDNS.update();
 #endif
