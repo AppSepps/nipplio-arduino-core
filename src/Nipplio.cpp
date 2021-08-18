@@ -20,6 +20,7 @@
 #include "FirebaseNetwork.h"
 #include "Storage.h"
 
+#if defined(NIPPLIO_MODE_WIFI)
 // Set these to run example.
 #define FIREBASE_HOST "https://nipplio-default-rtdb.europe-west1.firebasedatabase.app/"
 #if defined(ESP8266)
@@ -28,6 +29,7 @@ ESP8266WebServer server(80);
 WebServer server(80);
 #endif
 WiFiManager wifiManager;
+#endif
 
 Nipplio::Nipplio()
 {
@@ -132,13 +134,16 @@ String read_String(char add)
 
 void Nipplio::setup()
 {
+#if defined(NIPPLIO_MODE_WIFI)
 	setupFirebaseNetwork();
+#endif
 	//BLESetup();
 	//Serial.print("Chip ID: ");
 	//Serial.println(chipId);
 	//Serial.print("efuse ID: ");
 	storageSetup();
 	readValuesFromSpiffs();
+#if defined(NIPPLIO_MODE_WIFI)
 	wifiManager.setHostname(String(chipId).c_str());
 	String ssid = "Nipplio-" + String(chipId);
 	wifiManager.autoConnect(ssid.c_str(), NULL);
@@ -169,6 +174,7 @@ void Nipplio::setup()
 	server.begin();
 	String recivedData;
 	recivedData = read_String(10);
+#endif
 	//Serial.println("read_String: " + recivedData);
 }
 
@@ -182,18 +188,24 @@ void Nipplio::setSlotNames(String slotNamesArray[], int sizeOfArray)
 
 void Nipplio::triggerSlotWithNumber(int slot)
 {
+#if defined(NIPPLIO_MODE_WIFI)
 	updatePlaySound(slot);
+#else
 #if defined(ESP32)
 	BLENotifyButtonPressed(slot);
+#endif
 #endif
 }
 
 void Nipplio::loop()
 {
+#if defined(NIPPLIO_MODE_WIFI)
 	server.handleClient();
 	checkIfRefreshTokenStillValidAndIfNotRefreshTheToken();
-	BLEloop();
 #if defined(ESP8266)
 	MDNS.update();
+#endif
+#else
+	BLEloop();
 #endif
 }
