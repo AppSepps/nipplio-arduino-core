@@ -40,17 +40,21 @@ String read_String(char add);
 
 void handleRoot()
 {
+	#if defined(NIPPLIO_MODE_WIFI)
 	server.send(200, "text/plain", "hello from esp8266!\r\n");
+	#endif
 }
 
 void loginWithCustomToken()
 {
+	#if defined(NIPPLIO_MODE_WIFI)
 	String customToken = server.arg("customToken");
 	getAuthTokensFromCustomToken(customToken);
 	getUserData();
 	updateBoardInformation();
 	server.sendHeader("Access-Control-Allow-Origin", "*");
 	server.send(200, "application/json", "\"idToken\":\"" + idToken + "\",\"refreshToken\":\"" + refreshToken + "\"");
+	#endif
 }
 
 void unpairDevice()
@@ -59,10 +63,12 @@ void unpairDevice()
 	String userId = getUserIdForIdToken(idToken);
 	if(idToken != NULL && userId == uid) {
 		*/
+	#if defined(NIPPLIO_MODE_WIFI)
 	server.sendHeader("Access-Control-Allow-Origin", "*");
 	server.send(200, "application/text", "");
 	deleteConfigFile();
 	ESP.restart();
+	#endif
 	/*} else {
 		server.sendHeader("Access-Control-Allow-Origin", "*");
 		server.send(401, "application/text", "Not authorized to unpair");	
@@ -71,12 +77,15 @@ void unpairDevice()
 
 void resetDeviceToFactory()
 {
+	#if defined(NIPPLIO_MODE_WIFI)
 	unpairDevice();
 	wifiManager.resetSettings();
+	#endif
 }
 
 void getConfigRoute()
 {
+	#if defined(NIPPLIO_MODE_WIFI)
 	String output = "";
 	DynamicJsonDocument doc(4096);
 	doc["uid"] = uid;
@@ -95,6 +104,7 @@ void getConfigRoute()
 
 	server.sendHeader("Access-Control-Allow-Origin", "*");
 	server.send(200, "application/json", output);
+	#endif
 }
 
 void setSlotMappingToFirebase()
@@ -136,8 +146,9 @@ void Nipplio::setup()
 {
 #if defined(NIPPLIO_MODE_WIFI)
 	setupFirebaseNetwork();
+#else if defined(NIPPLIO_MODE_BLE)
+	BLESetup();
 #endif
-	//BLESetup();
 	//Serial.print("Chip ID: ");
 	//Serial.println(chipId);
 	//Serial.print("efuse ID: ");
@@ -190,7 +201,7 @@ void Nipplio::triggerSlotWithNumber(int slot)
 {
 #if defined(NIPPLIO_MODE_WIFI)
 	updatePlaySound(slot);
-#else
+#else if defined(NIPPLIO_MODE_BLE)
 #if defined(ESP32)
 	BLENotifyButtonPressed(slot);
 #endif
@@ -205,7 +216,7 @@ void Nipplio::loop()
 #if defined(ESP8266)
 	MDNS.update();
 #endif
-#else
+#else if defined(NIPPLIO_MODE_BLE)
 	BLEloop();
 #endif
 }
