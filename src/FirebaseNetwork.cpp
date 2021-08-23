@@ -11,20 +11,13 @@
 #include "Storage.h"
 //#include <ESP8266TrueRandom.h>
 #include <ArduinoJson.h>
+#include "Common.h"
 
 unsigned long lastRefreshTokenUpdateTimeInMillis = 0;
-uint32_t chipId;
 
 void setupFirebaseNetwork()
 {
-	#if defined(ESP8266)
-		chipId = ESP.getChipId();
-	#else
-	for (int i = 0; i < 17; i = i + 8)
-	{
-		chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
-	}
-	#endif
+
 }
 
 void refreshIdToken();

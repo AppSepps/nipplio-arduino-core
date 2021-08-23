@@ -1,7 +1,5 @@
 #include <Arduino.h>
 
-extern uint32_t chipId;
-
 void setupFirebaseNetwork();
 void getAuthTokensFromCustomToken(String customToken);
 void getUserData();

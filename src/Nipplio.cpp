@@ -19,6 +19,7 @@
 #include <EEPROM.h>
 #include "FirebaseNetwork.h"
 #include "Storage.h"
+#include "Common.h"
 
 #if defined(NIPPLIO_MODE_WIFI)
 // Set these to run example.
@@ -144,6 +145,9 @@ String read_String(char add)
 
 void Nipplio::setup()
 {
+	CommonSetup();
+	storageSetup();
+	readValuesFromSpiffs();
 #if defined(NIPPLIO_MODE_WIFI)
 	setupFirebaseNetwork();
 #else if defined(NIPPLIO_MODE_BLE)
@@ -152,8 +156,6 @@ void Nipplio::setup()
 	//Serial.print("Chip ID: ");
 	//Serial.println(chipId);
 	//Serial.print("efuse ID: ");
-	storageSetup();
-	readValuesFromSpiffs();
 #if defined(NIPPLIO_MODE_WIFI)
 	wifiManager.setHostname(String(chipId).c_str());
 	String ssid = "Nipplio-" + String(chipId);
@@ -195,6 +197,7 @@ void Nipplio::setSlotNames(String slotNamesArray[], int sizeOfArray)
 	{
 		slotNames[i] = slotNamesArray[i];
 	}
+	BLESetSlotsValue();
 }
 
 void Nipplio::triggerSlotWithNumber(int slot)
