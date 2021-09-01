@@ -5,8 +5,6 @@
   "keywords": "nipplio",
   "homepage": "https://nipplio.web.app",
   "dependencies": {
-    "arduino-libraries/Arduino_JSON": "^0.1.0",
-    "https://github.com/tzapu/WiFiManager": "8984863fe6a8106bf0ead7e6ac013c745a4d1f93",
-    "bblanchon/ArduinoJson": "^6.18.3"
+    "https://github.com/MHeironimus/ArduinoJoystickLibrary": "35096a4519466baf79f4e027150044011fd82bd3"
   }
 }

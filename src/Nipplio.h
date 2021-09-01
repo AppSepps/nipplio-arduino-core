@@ -7,9 +7,10 @@ class Nipplio
 {
 public:
 	Nipplio();
-	void setup();
+	void setup(int buttonCount);
 	void setSlotNames(String slotNamesArray[], int sizeOfArray);
-	void triggerSlotWithNumber(int slot);
+	void slotPressed(int slot);
+	void slotReleased(int slot);
 	void loop();
 };
 #endif
